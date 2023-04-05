@@ -220,7 +220,8 @@ if __name__ == "__main__":
     b = [50, 50, 200, 200, 400, 150, 200, 75, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 200, 50, 0]
     N = 10000
     sampler(sequences, motifs, k, t, b, N)
-    with open("output.txt", "w") as f:
+    outFile = input("Enter the name of the output file: ")
+    with open(outFile, "w") as f:
         for i in range(0, len(sequences)):
             # write sequences[i][motifs[i]:motifs[i]+k]
             f.write(sequences[i][motifs[i]:motifs[i]+k] + "\n")
