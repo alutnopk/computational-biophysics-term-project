@@ -1,9 +1,5 @@
 import random
 
-from numpy import argmax
-from uniprotGet import getSequence
-
-
 def symbolToNumber(symbol):
     if symbol == 'A':
         return 0
@@ -99,8 +95,6 @@ def numberToSymbol(number):
 
 # From each sequence, randomly select a k-mer
 # Return a list of k-mers
-
-
 def possibleMotifs(sequences, motifs, k):
     # If the motifs[i] for sequence[i] is empty then we randomly select a k-mer
     possMotifs = []
@@ -119,8 +113,8 @@ def possibleMotifs(sequences, motifs, k):
     return possMotifs
 
 
-# Now we try to make the table of probabilities
-def CreateProbabilityTable(sequences, motifs, k, t, b):
+# Now we make the profile matrix
+def CreateprofileMatrix(sequences, motifs, k, t, b):
     possMotifs = possibleMotifs(sequences, motifs, k)
     # Create a table of probabilities
     table = []
@@ -141,14 +135,15 @@ def CreateProbabilityTable(sequences, motifs, k, t, b):
                     table[symbolToNumber(sequence[j])][0] += 1
 
     # Create new table of same dimensions for probabilities
-    probabilityTable = []
+    profileMatrix = []
     for i in range(0, 21):
-        probabilityTable.append([0] * (k+1))
+        profileMatrix.append([0] * (k+1))
 
     # Calculate the probabilities as
     # nonMotifElems = sum(table[i][0])
-    # P(i, 0) = (table(i,0) + b) / (nonMotifElems + 21 * b)
-    # P(i, j) = (table(i,j) + b) / (t - 1 + 21 * b)
+    # B = sum(b)
+    # P(i, 0) = (table(i,0) + b[i]) / (nonMotifElems + B)
+    # P(i, j) = (table(i,j) + b[i]) / (t - 1 + B)
     nonMotifElems = 0
     B = 0
     for i in range(0, 21):
@@ -157,27 +152,15 @@ def CreateProbabilityTable(sequences, motifs, k, t, b):
 
     
     for i in range(0, 21):
-        probabilityTable[i][0] = (table[i][0] + b[i]) / (nonMotifElems + B)
+        profileMatrix[i][0] = (table[i][0] + b[i]) / (nonMotifElems + B)
         for j in range(1, k+1):
-            probabilityTable[i][j] = (table[i][j] + b[i]) / (t - 1 + B)
+            profileMatrix[i][j] = (table[i][j] + b[i]) / (t - 1 + B)
 
     gapIndex = symbolToNumber('-')
     for i in range(0, k+1):
-        probabilityTable[gapIndex][i] = 0
+        profileMatrix[gapIndex][i] = 0
 
-    return probabilityTable
-
-# Convert this list of sequences into a list of list of numbers
-
-
-def symbolSequenceToNumber(sequences):
-    numberSequences = []
-    for sequence in sequences:
-        numberSequence = []
-        for symbol in sequence:
-            numberSequence.append(symbolToNumber(symbol))
-        numberSequences.append(numberSequence)
-    return numberSequences
+    return profileMatrix
 
 
 def sampler(sequences, motifs, k, t, b, N):
@@ -196,10 +179,7 @@ def sampler(sequences, motifs, k, t, b, N):
                 remainingSequences.append(sequences[i])
 
         # Create a probability table for the remaining sequences
-        probabilityTable = CreateProbabilityTable(remainingSequences, motifs, k, t-1, b)
-
-        # print(probabilityTable[symbolToNumber('C')])
-        # print(probabilityTable[symbolToNumber('L')])
+        profileMatrix = CreateprofileMatrix(remainingSequences, motifs, k, t-1, b)
 
         # Calculate the probability of each k-mer in the selected sequence
         # and select a new motif for the selected sequence
@@ -210,7 +190,7 @@ def sampler(sequences, motifs, k, t, b, N):
                 prob = 0
             else:
                 for l in range(0, k):
-                    prob *= probabilityTable[symbolToNumber(sequences[randomSequence][j+l])][l+1]
+                    prob *= profileMatrix[symbolToNumber(sequences[randomSequence][j+l])][l+1]
             probs.append(prob)
         # Normalize the probabilities
         total = sum(probs)
@@ -219,10 +199,8 @@ def sampler(sequences, motifs, k, t, b, N):
         # Now that we have the probs, we select a new motif start position for the selected sequence
         # We use the random.choices function to select a new motif start position
         motifStartPosition = random.choices(range(0, len(sequences[randomSequence]) - k + 1), weights=probs, k=1)[0]
-        print(motifStartPosition)
         # set motifs[randomSequence] to motifStartPosition
         motifs[randomSequence] = motifStartPosition
-        # print(motifs[randomSequence])
 
 
 if __name__ == "__main__":
@@ -231,7 +209,6 @@ if __name__ == "__main__":
     with open('sequences1.txt') as f:
         for line in f:
             sequences.append(line.strip())
-    numberSequences = symbolSequenceToNumber(sequences)
     # We have a list of motifs for each sequence
     # Initially all motifs are empty
     motifs = []
@@ -243,6 +220,7 @@ if __name__ == "__main__":
     b = [50, 50, 200, 200, 400, 150, 200, 75, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 200, 50, 0]
     N = 10000
     sampler(sequences, motifs, k, t, b, N)
-    print(motifs)
-    for i in range(0, len(sequences)):
-        print(sequences[i][motifs[i]:motifs[i]+k])
+    with open("output.txt", "w") as f:
+        for i in range(0, len(sequences)):
+            # write sequences[i][motifs[i]:motifs[i]+k]
+            f.write(sequences[i][motifs[i]:motifs[i]+k] + "\n")

@@ -11,23 +11,22 @@ def getSequence(uniprotID):
     html = ''.join(html)
     return html
 
-def getFasta(uniprotIDs):
+def getFasta(uniprotIDs, outFile):
     # get the fasta file from the uniprot database
     url = "http://www.uniprot.org/uniprot/"
     for uniprotID in uniprotIDs:
         newUrl = url
         newUrl += uniprotID + ".fasta"
-        print(newUrl)
         response = r.post(newUrl)
         html = ''.join(response.text)
         # Write to fasta file
-        with open("insulins.fasta", "a") as file:
+        with open(outFile, "a") as file:
             file.write(html)
     
 # Read the file "dataset" given as parameter
 # For each line call the getSequence function
 # Return a list of sequences
-def readDataset(dataset):
+def readDataset(dataset, outFile):
     sequences = []
     with open(dataset, 'r') as file:
         for line in file:
@@ -35,7 +34,9 @@ def readDataset(dataset):
             line = line[:-1]
             sequence = getSequence(line)
             sequences.append(sequence)
-    return sequences
+    with open(outFile, "w") as file:
+        for sequence in sequences:
+            file.write(sequence + "\n")
 
 
 if __name__ == "__main__":
