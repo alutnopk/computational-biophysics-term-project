@@ -1,8 +1,8 @@
 # CBP_Project
 ## Group:
-### Kartik Pontula(20CS10031)
-### N Surya Prakash Reddy(20CS10038)
-### Virinchi Mourya Peddireddy(20CS10075)
+### [Kartik Pontula](https://www.github.com/alutnopk)
+### [N Surya Prakash Reddy](https://www.github.com/nespar7)
+### [Virinchi Mourya Peddireddy](https://github.com/Kreiger444)
 
 [presentation](https://docs.google.com/presentation/d/1ZZJFsbxjCnzu3oNjgeBYddt75TXt0Xn12fpESFmSq6Y/edit#slide=id.gc6fa3c898_0_0)
 
