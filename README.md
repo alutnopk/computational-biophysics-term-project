@@ -9,4 +9,4 @@
 [report](https://drive.google.com/file/d/1PNv9Q4jYN64NOk251-cAuGYTtMu5pHxt/view?usp=sharing)
 
 ## References:
-[link](https://drive.google.com/file/d/0B32Atyb9515ZRUxaVjhTWHpFZDQ/view?pli=1&resourcekey=0-ojcuNvjvhunGd9QgtBe54g)
+[Gibbs Sampling explanation](https://drive.google.com/file/d/0B32Atyb9515ZRUxaVjhTWHpFZDQ/view?pli=1&resourcekey=0-ojcuNvjvhunGd9QgtBe54g)
